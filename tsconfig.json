@@ -1,0 +1,11 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "removeComments": true,
+    "declaration": true,
+    "rootDir": "src",
+    "outDir": "lib"
+  }
+}
