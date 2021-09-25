@@ -1,6 +1,6 @@
 {
   "name": "@joshcena/docusaurus-plugin-utils",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A utility to build and pack docusaurus plugins",
   "author": "Joshua Chen <sidachen2003@gmail.com> (https://joshcena.com/)",
   "license": "MIT",
@@ -25,14 +25,17 @@
     "format": "prettier --write \"**/*.{js,ts}\""
   },
   "dependencies": {
-    "@babel/cli": "^7.15.4",
     "@babel/core": "^7.15.5",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.12.13",
     "@babel/plugin-proposal-optional-chaining": "^7.12.16",
     "@babel/plugin-transform-modules-commonjs": "^7.12.13",
     "@babel/preset-typescript": "^7.12.16",
+    "@types/lodash": "^4.14.174",
     "chalk": "^4.1.2",
-    "commander": "^5.1.0"
+    "chokidar": "^3.5.2",
+    "commander": "^5.1.0",
+    "globby": "^12.0.2",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@docusaurus/types": "2.0.0-beta.6",
@@ -45,5 +48,8 @@
     "lint-staged": "^11.1.2",
     "prettier": "^2.4.0",
     "typescript": "^4.3.5"
+  },
+  "peerDependencies": {
+    "prettier": "2.x"
   }
 }

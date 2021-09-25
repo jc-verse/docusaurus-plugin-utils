@@ -1,45 +1,91 @@
-import handleDir from '@babel/cli/lib/babel/dir';
 import path from 'path';
+import fs from 'fs';
+import { transformFileSync } from '@babel/core';
+import { globby } from 'globby';
+import prettier, { Options as PrettierOptions } from 'prettier';
 
-export default async function build(
-  options: Partial<{
-    sourceDir: string;
-    targetDir: string;
-    theme: boolean;
-    themeDir: string;
-    themeTargetDir: string;
-  }> = {},
-): Promise<void> {
-  const { sourceDir = 'src', targetDir = 'lib', themeDir, themeTargetDir = 'js-theme' } = options;
-  handleDir({
-    cliOptions: {
-      filenames: [sourceDir],
-      outDir: targetDir,
-      extensions: '.tsx,.ts',
-      copyFiles: true,
-    },
-    babelOptions: {
-      ignore: ['**/*.d.ts'],
+export function compileOrCopy(
+  filePath: string,
+  sourceDir: string,
+  targetDir: string,
+  compileAction: (file: string) => string,
+): void {
+  const targetPath = path
+    .resolve(targetDir, path.relative(sourceDir, filePath))
+    .replace(/\.tsx?/g, '.js');
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+  if (/\.tsx?/.test(path.extname(filePath))) {
+    fs.writeFileSync(targetPath, compileAction(filePath));
+  } else {
+    fs.copyFileSync(filePath, targetPath);
+  }
+}
+
+function transformDir(
+  sourceDir: string,
+  targetDir: string,
+  compileAction: (file: string) => string,
+  ignore: string[],
+) {
+  globby(`${sourceDir}/**/*`, {
+    ignore: [...ignore, '**/*.d.ts'],
+  }).then((files) =>
+    files.forEach((filePath) => {
+      compileOrCopy(filePath, sourceDir, targetDir, compileAction);
+    }),
+  );
+}
+
+export function fullyTranspile(file: string): string {
+  return (
+    transformFileSync(file, {
       presets: [['@babel/preset-typescript', { isTSX: true, allExtensions: true }]],
       plugins: [
         '@babel/plugin-transform-modules-commonjs',
         '@babel/plugin-proposal-nullish-coalescing-operator',
         '@babel/plugin-proposal-optional-chaining',
       ],
-    },
-  });
-  if (themeDir) {
-    handleDir({
-      cliOptions: {
-        filenames: [path.resolve(sourceDir, themeDir)],
-        outDir: path.resolve(targetDir, themeTargetDir),
-        extensions: '.tsx,.ts',
-        copyFiles: true,
-      },
-      babelOptions: {
-        ignore: ['**/*.d.ts'],
-        presets: [['@babel/preset-typescript', { isTSX: true, allExtensions: true }]],
-      },
-    });
+    })?.code ?? ''
+  );
+}
+
+function stripTypes(file: string, prettierConfig: PrettierOptions) {
+  // TODO let's hope for the pipeline operator :D
+  return prettier.format(
+    transformFileSync(file, {
+      presets: [['@babel/preset-typescript', { isTSX: true, allExtensions: true }]],
+    })?.code ?? '',
+    { parser: 'babel', ...prettierConfig },
+  );
+}
+
+export default async function build(
+  options: Partial<{
+    sourceDir: string;
+    targetDir: string;
+    themeDir: string;
+    themeTargetDir: string;
+    ignore: string[];
+  }> = {},
+): Promise<void> {
+  const {
+    sourceDir = 'src',
+    targetDir = 'lib',
+    themeDir = 'src/theme',
+    themeTargetDir = 'lib/js-theme',
+    ignore = ['**/__tests__/**'],
+  } = options;
+  // Compile: src/*.ts -> lib/*.js
+  transformDir(sourceDir, targetDir, fullyTranspile, [...ignore, '**/*.d.ts']);
+  // Re-compile & prettier: src/theme/*.tsx -> lib/js-theme/*.js (for swizzling)
+  if (fs.existsSync(themeDir)) {
+    const prettierConfig = await prettier.resolveConfig(themeDir);
+    if (!prettierConfig) {
+      throw new Error('Prettier config file not found');
+    }
+    transformDir(themeDir, themeTargetDir, (file) => stripTypes(file, prettierConfig), [
+      ...ignore,
+      '**/*.d.ts',
+    ]);
   }
 }
