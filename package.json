@@ -1,15 +1,15 @@
 {
   "name": "@joshcena/docusaurus-plugin-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A utility to build and pack docusaurus plugins",
   "author": "Joshua Chen <sidachen2003@gmail.com> (https://joshcena.com/)",
   "license": "MIT",
-  "homepage": "https://github.com/Josh-Cena/docusaurus-plugin-utils#docusaurus-plugin-utils",
+  "homepage": "https://github.com/jc-verse/docusaurus-plugin-utils#docusaurus-plugin-utils",
   "bugs": {
-    "url": "https://github.com/Josh-Cena/docusaurus-plugin-utils/issues",
+    "url": "https://github.com/jc-verse/docusaurus-plugin-utils/issues",
     "email": "sidachen2003@gmail.com"
   },
-  "repository": "github:Josh-Cena/docusaurus-plugin-utils",
+  "repository": "github:jc-verse/docusaurus-plugin-utils",
   "keywords": [
     "typescript",
     "docusaurus",

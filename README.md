@@ -2,6 +2,29 @@
 
 A utility to build and pack docusaurus plugins, particularly useful for TypeScript plugin authors
 
+## Motivation
+
+As more of the official packages are migrated to TS, I start to notice duplicated logic in the packing process. Internally, a package would go through at most three steps:
+
+1. Compilation with `tsc`;
+2. Untyped files are copied to the `lib` folder with a node script;
+3. The theme components are transpiled with only types stripped, and then formatted, so that it's usable for JS swizzling.
+
+Not following this long process of compiling -> copying static assets -> double transpilation can cause some troubles.
+
+The first one is less of a concern, although more likely to occur: when the theme folder contains `.css` files, they are not copied to the dist folder by `tsc`, you would either need to transpile by babel with allExtensions: true, or you would need to use the `copyUntypedFiles` script (which we use a lot—duplicated in _every_ package). Neither is very convenient for a TS plugin developer. However, the plugin author cannot get away without using one of the two techniques, because missing `.css` files would make the code not run at all.
+
+The second one can be more problematic. The TypeScript theme components are transpiled twice, once only with the types stripped and once to actual commonjs code. Now imagine the following case:
+
+1. The developer of a plugin writes the plugin in TS;
+2. Unaware of the double-transpile workflow, the plugin is only built with `tsc` and distributed;
+3. A user uses the plugin, and decided to swizzle a theme component, but uses the JS version;
+4. The user will receive an unreadable component.
+
+This can go away unnoticed because for normal users who don't swizzle, the plugin runs correctly. The above case is very rare as of now, but can be likely in the future with a better plugin ecosystem. Also, many official plugins have their own theme components, and most of them are currently kept as JS to bypass this issue—still not optimal for TS-perfectionists like me. If we can expose a utility to transpile the theme components to human-readable JS automatically, things would be a lot easier for the plugin authors.
+
+And that's how this package comes to existence.
+
 ## CLI
 
 ### `docusaurus-plugin build`
