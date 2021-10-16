@@ -17,9 +17,9 @@ function transformDir(
   ignore: string[],
 ) {
   Globby(`${sourceDir}/**/*`, {ignore}).then((files) =>
-    files.forEach((filePath) =>
-      compileOrCopy(filePath, sourceDir, targetDir, compileAction),
-    ),
+    files.forEach((filePath) => {
+      compileOrCopy(filePath, sourceDir, targetDir, compileAction);
+    }),
   );
 }
 
