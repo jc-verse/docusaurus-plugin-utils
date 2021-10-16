@@ -1,49 +1,18 @@
 {
-  "name": "@joshcena/docusaurus-plugin-utils",
-  "version": "0.1.2",
-  "description": "A utility to build and pack docusaurus plugins",
-  "author": "Joshua Chen <sidachen2003@gmail.com> (https://joshcena.com/)",
-  "license": "MIT",
-  "homepage": "https://github.com/jc-verse/docusaurus-plugin-utils#docusaurus-plugin-utils",
-  "bugs": {
-    "url": "https://github.com/jc-verse/docusaurus-plugin-utils/issues",
-    "email": "sidachen2003@gmail.com"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "repository": "github:jc-verse/docusaurus-plugin-utils",
-  "keywords": [
-    "typescript",
-    "docusaurus",
-    "babel",
-    "cli",
-    "utility"
+  "name": "docusaurus-plugin-utils-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "package",
+    "test-plugin"
   ],
-  "bin": {
-    "docusaurus-plugin": "bin/index.js"
-  },
   "scripts": {
-    "build": "tsc",
+    "build": "yarn workspace @joshcena/docusaurus-plugin-utils build",
+    "test": "yarn workspace test-plugin build",
     "lint": "eslint --cache \"**/*.{js,ts}\"",
     "format": "prettier --write \"**/*.{js,ts}\""
   },
-  "dependencies": {
-    "@babel/core": "^7.15.5",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.12.13",
-    "@babel/plugin-proposal-optional-chaining": "^7.12.16",
-    "@babel/plugin-transform-modules-commonjs": "^7.12.13",
-    "@babel/preset-typescript": "^7.12.16",
-    "@docusaurus/utils": "^2.0.0-beta.7",
-    "@types/lodash": "^4.14.174",
-    "chalk": "^4.1.2",
-    "chokidar": "^3.5.2",
-    "commander": "^5.1.0",
-    "globby": "^12.0.2",
-    "lodash": "^4.17.21"
-  },
   "devDependencies": {
-    "@docusaurus/types": "2.0.0-beta.7",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
@@ -53,8 +22,5 @@
     "lint-staged": "^11.1.2",
     "prettier": "^2.4.1",
     "typescript": "^4.4.3"
-  },
-  "peerDependencies": {
-    "prettier": "2.x"
   }
 }

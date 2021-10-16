@@ -6,7 +6,7 @@
  */
 
 import fs from 'fs';
-import {Globby} from '@docusaurus/utils';
+import {Globby} from '@docusaurus/utils/lib/globUtils';
 import Prettier from 'prettier';
 import {compileOrCopy, compileServerCode, compileClientCode} from './compiler';
 
